@@ -81,8 +81,12 @@ const (
 	upstreamBaseCN = "https://copilot.tencent.com"
 	// Global chat/auth gateway (iss = workbuddy.ai realm). APISIX on
 	// copilot.tencent.com rejects Global JWTs with 401; must use workbuddy.ai.
-	upstreamBaseGlobal  = "https://www.workbuddy.ai"
-	clientUA            = "CLI/2.63.2 CodeBuddy/2.63.2"
+	upstreamBaseGlobal = "https://www.workbuddy.ai"
+	clientUA           = "CLI/2.63.2 CodeBuddy/2.63.2"
+	// modelsGlobalUA is the User-Agent accepted by the Global model-catalog
+	// endpoint (workbuddy.ai/v3/config). The gateway extracts a "copilot
+	// version" from the UA and rejects requests missing it (code 12403).
+	modelsGlobalUA      = "WorkBuddy/5.5.2"
 	originReferer       = "https://www.codebuddy.cn"
 	originRefererGlobal = "https://www.workbuddy.ai"
 

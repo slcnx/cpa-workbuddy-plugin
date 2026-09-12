@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.14.32
+
+### Fix — Global 动态模型发现切换到 /v3/config，补齐 GPT/Gemini 全目录
+
+- **根因**：Global realm 的动态发现一直请求 `workbuddy.ai/console/enterprises/personal/models`，该端点对 Global token 恒返回 500（APISIX 500），插件静默回落到静态兜底列表——静态列表里没有 GPT 系列，导致 Global 账号永远看不到 `gpt-6-astra` / `gpt-5.6-sol|terra|luna` / `gpt-5.5` / `gpt-5.4` / `gpt-5.3-codex` / `gemini-3.5-flash`。
+- **修复**：对齐桌面端真实行为——Global 模型目录改走 `GET workbuddy.ai/v3/config`（带 Authorization 时返回完整 `{models, agents[cli].models}`，共 21 个模型，与 WorkBuddy AI 5.5.2 桌面端模型下拉框一致）；CN 继续走 `/console/enterprises/personal/models`（该端点对 CN token 正常）。
+- **UA 门禁**：`/v3/config` 带鉴权时会校验 UA 中的 copilot 版本（缺失返回 12403 `check ua, get coding copilot version error`），Global 发现请求使用 `WorkBuddy/5.5.2` UA；普通 chat 请求 UA 不变。
+- **解析复用**：`/v3/config` 的 models 条目字段（`maxInputTokens` / `maxOutputTokens` / `maxAllowedSize`）与 console 端点一致，直接复用 `parseModelsAPIResponse`，无新增解析分支。
+- **contextWindow 兼容**：`/v3/config` 返回的 `contextWindow` 为对象 `{"defaultLength":N,"supportedLengths":[...]}` 而非裸数字，导致首版解析失败（`cannot unmarshal object into ... int64`）；新增 `upstreamContextWindow` 自定义 Unmarshal，同时兼容裸数字与对象形态（取 `defaultLength`）。
+
 ## 0.14.31
 
 ### Fix — CN / Global 动态模型隔离、kimi-k3 自动适配与首消息校验

@@ -427,9 +427,19 @@ func isGlobalToken(accessToken string) bool {
 	return strings.Contains(iss, "workbuddy.ai") || strings.Contains(iss, "codebuddy.ai")
 }
 
-// callModelsAPI GETs /console/enterprises/personal/models from the upstream.
+// callModelsAPI fetches the realm's model catalog from the upstream.
 // Uses the shared client (connection pooling) with a per-request 15s budget;
 // the shared client's own 120s timeout stays as the outer bound.
+//
+// Per-realm endpoints (2026-09-12 verified against both upstreams):
+//   - CN:     GET copilot.tencent.com/console/enterprises/personal/models
+//     returns {data:{models, agents[name:"cli"].models[]}}.
+//   - Global: GET workbuddy.ai/v3/config
+//     The console endpoint above 500s for Global tokens, which hid the
+//     whole GPT/Gemini catalog (gpt-6-astra, gpt-5.6-*, gpt-5.5, gpt-5.4,
+//     gpt-5.3-codex, gemini-3.5-flash). The desktop app uses /v3/config;
+//     with an Authorization header + a copilot-style UA it returns the
+//     same {models, agents[name:"cli"].models[]} shape with all 21 models.
 func callModelsAPI(accessToken string) ([]pluginapi.ModelInfo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -438,9 +448,13 @@ func callModelsAPI(accessToken string) ([]pluginapi.ModelInfo, error) {
 	isGlobal := isGlobalToken(accessToken)
 	modelsURL := endpointModels
 	origin := originReferer
+	userAgent := clientUA
 	if isGlobal {
-		modelsURL = upstreamBaseGlobal + "/console/enterprises/personal/models"
+		modelsURL = upstreamBaseGlobal + "/v3/config"
 		origin = originRefererGlobal
+		// /v3/config rejects requests without a parseable copilot version in the
+		// UA (code 12403 "check ua, get coding copilot version error").
+		userAgent = modelsGlobalUA
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, modelsURL, nil)
 	if err != nil {
@@ -450,7 +464,7 @@ func callModelsAPI(accessToken string) ([]pluginapi.ModelInfo, error) {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Origin", origin)
 	req.Header.Set("Referer", origin+"/")
-	req.Header.Set("User-Agent", clientUA)
+	req.Header.Set("User-Agent", userAgent)
 	resp, err := hostHTTPDo(req)
 	if err != nil {
 		log.Printf("[workbuddy] models: GET %s transport failed: %v", modelsURL, err)
@@ -555,16 +569,49 @@ func parseModelsAPIResponse(body []byte) ([]pluginapi.ModelInfo, error) {
 // 旧实现读 contextWindow / maxTokens —— 这两个字段上游从不返回，导致
 // 所有动态模型的 ContextLength / MaxCompletionTokens 恒为 0。
 type upstreamModelEntry struct {
-	ID                 string `json:"id"`
-	Name               string `json:"name"`
-	Disabled           bool   `json:"disabled"`
-	MaxInputTokens     *int64 `json:"maxInputTokens"`
-	MaxOutputTokens    *int64 `json:"maxOutputTokens"`
-	MaxAllowedSize     *int64 `json:"maxAllowedSize"`
-	MaxContextLength   *int64 `json:"maxContextLength"`
-	ContextWindow      *int64 `json:"contextWindow"`
-	MaxTokens          *int64 `json:"maxTokens"`
-	MaxCompletionToken *int64 `json:"maxCompletionTokens"`
+	ID                 string                 `json:"id"`
+	Name               string                 `json:"name"`
+	Disabled           bool                   `json:"disabled"`
+	MaxInputTokens     *int64                 `json:"maxInputTokens"`
+	MaxOutputTokens    *int64                 `json:"maxOutputTokens"`
+	MaxAllowedSize     *int64                 `json:"maxAllowedSize"`
+	MaxContextLength   *int64                 `json:"maxContextLength"`
+	ContextWindow      *upstreamContextWindow `json:"contextWindow"`
+	MaxTokens          *int64                 `json:"maxTokens"`
+	MaxCompletionToken *int64                 `json:"maxCompletionTokens"`
+}
+
+// upstreamContextWindow 兼容两种上游形态：CN console 端点从不返回该字段；
+// Global /v3/config 返回对象 {"defaultLength":N,"supportedLengths":[...]}；
+// 个别旧端点返回裸数字。UnmarshalJSON 同时吃两种。
+type upstreamContextWindow struct {
+	DefaultLength int64
+}
+
+func (w *upstreamContextWindow) UnmarshalJSON(b []byte) error {
+	// 形态一：裸数字（旧端点）。
+	var n int64
+	if err := json.Unmarshal(b, &n); err == nil {
+		w.DefaultLength = n
+		return nil
+	}
+	// 形态二：对象（Global /v3/config）。
+	var obj struct {
+		DefaultLength int64 `json:"defaultLength"`
+	}
+	if err := json.Unmarshal(b, &obj); err != nil {
+		return err
+	}
+	w.DefaultLength = obj.DefaultLength
+	return nil
+}
+
+// value 把兼容包装降为 int64，供 firstPositive 复用。
+func (w *upstreamContextWindow) value() *int64 {
+	if w == nil || w.DefaultLength <= 0 {
+		return nil
+	}
+	return &w.DefaultLength
 }
 
 // firstPositive 返回第一个非 nil 且为正数的值，全无时返回 0。
@@ -585,7 +632,7 @@ func firstPositive(vals ...*int64) int64 {
 // [返回] 上下文长度；缺失时 0
 // 最近修改时间 2026-09-12（对齐上游 maxInputTokens）
 func (m upstreamModelEntry) contextLength() int64 {
-	return firstPositive(m.MaxInputTokens, m.MaxAllowedSize, m.MaxContextLength, m.ContextWindow)
+	return firstPositive(m.MaxInputTokens, m.MaxAllowedSize, m.MaxContextLength, m.ContextWindow.value())
 }
 
 // maxOutputTokens 取最大输出 token 数，优先真实字段，兼容旧字段别名。
