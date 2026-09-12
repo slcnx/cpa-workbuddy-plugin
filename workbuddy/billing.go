@@ -16,17 +16,56 @@ import (
 )
 
 // isGlobalDomain reports whether the domain belongs to the international
-// (www.workbuddy.ai) WorkBuddy service.  The CN service uses
-// www.codebuddy.cn; Global uses www.workbuddy.ai.
+// (www.workbuddy.ai / codebuddy.ai) WorkBuddy service. The CN service uses
+// www.codebuddy.cn / copilot.tencent.com; Global uses www.workbuddy.ai / codebuddy.ai.
 func isGlobalDomain(domain string) bool {
 	d := strings.ToLower(strings.TrimSpace(domain))
-	return d == "workbuddy.ai" || strings.HasSuffix(d, ".workbuddy.ai")
+	return d == "workbuddy.ai" || strings.HasSuffix(d, ".workbuddy.ai") ||
+		d == "codebuddy.ai" || strings.HasSuffix(d, ".codebuddy.ai")
 }
 
-// accountRegion returns "cn" or "global" based on the auth's domain field.
-// Empty domain (legacy auth files) defaults to "cn" for backward compat.
+// accountRegion returns "cn" or "global" based on the auth's domain field or JWT iss.
+// Empty domain (legacy auth files) defaults to "cn" for backward compat unless the token is Global.
 func accountRegion(sa *storedAuth) string {
-	if sa != nil && isGlobalDomain(sa.Auth.Domain) {
+	if sa != nil {
+		if isGlobalDomain(sa.Auth.Domain) {
+			return "global"
+		}
+		if sa.Auth.AccessToken != "" && isGlobalToken(sa.Auth.AccessToken) {
+			return "global"
+		}
+	}
+	return "cn"
+}
+
+// detectRealm determines whether the credential belongs to "global" or "cn".
+// It checks the Domain field in storageJSON (supporting both flat and nested shapes),
+// and falls back to inspecting the JWT iss claim from accessToken.
+func detectRealm(storageJSON []byte, accessToken string) string {
+	if len(storageJSON) > 0 {
+		var flat struct {
+			Domain      string `json:"domain"`
+			AccessToken string `json:"accessToken"`
+		}
+		if err := json.Unmarshal(storageJSON, &flat); err == nil {
+			if isGlobalDomain(flat.Domain) {
+				return "global"
+			}
+			if flat.AccessToken != "" && isGlobalToken(flat.AccessToken) {
+				return "global"
+			}
+		}
+		var nested storedAuth
+		if err := json.Unmarshal(storageJSON, &nested); err == nil {
+			if isGlobalDomain(nested.Auth.Domain) {
+				return "global"
+			}
+			if nested.Auth.AccessToken != "" && isGlobalToken(nested.Auth.AccessToken) {
+				return "global"
+			}
+		}
+	}
+	if accessToken != "" && isGlobalToken(accessToken) {
 		return "global"
 	}
 	return "cn"

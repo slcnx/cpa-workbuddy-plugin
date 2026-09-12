@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.31
+
+### Fix — CN / Global 动态模型隔离、kimi-k3 自动适配与首消息校验
+
+- **CN 与 Global 动态模型缓存隔离**：将单例模型缓存拆分为 `dynamicModelsCacheCN` 与 `dynamicModelsCacheGlobal`，避免两域模型互相污染与覆盖；按凭据 realm（域域名与 JWT iss）定向请求对应上游发现接口（CN 请求 `copilot.tencent.com`，Global 请求 `workbuddy.ai`）。
+- **kimi-k3 动态合成与映射**：CN 上游返回模型为 `kimi-k3-1`（展示名为 `Kimi-K3`），当检测到 `kimi-k3-1` 且无 `kimi-k3` 时自动合成 `kimi-k3` 条目供客户端使用；同时针对 Global 上游不支持 `kimi-k3-1`（错误码 11102）在转发时将 `kimi-k3-1` 映射为 `kimi-k3`。
+- **Global 首消息 prompt 规范**：Global 上游对无 system message 或首条非 system prompt 的请求返回 11128 错误，自动对 Global 账号补齐首条 system message。
+- **静态与配置优先级保障**：修复动态发现为空时错误注入静态兜底导致配置被无脑覆盖的问题，确保「动态 > 配置 > 静态」优先级链在无凭据或网络异常时符合预期。
+
 ## 0.14.30
 
 ### Fix — host.http.do 非流式桥接响应状态码恒为 0（动态发现/积分失效的真正根因）

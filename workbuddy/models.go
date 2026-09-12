@@ -18,19 +18,43 @@ import (
 	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
 )
 
-func wbModels() []pluginapi.ModelInfo {
+func wbCNModels() []pluginapi.ModelInfo {
 	return []pluginapi.ModelInfo{
+		{ID: "kimi-k3", Name: "Kimi-K3", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "kimi-k3-1", Name: "Kimi-K3-1", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5.3", Name: "GLM-5.3", ContextLength: 200000, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5.3-flash", Name: "GLM-5.3-Flash", ContextLength: 200000, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "deepseek-v4.1-flash", Name: "Deepseek-V4.1-Flash", ContextLength: 1000000, MaxCompletionTokens: 128000, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5.2", Name: "GLM-5.2", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5.1", Name: "GLM-5.1", ContextLength: 131072, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5v-turbo", Name: "GLM-5V Turbo", ContextLength: 131072, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "kimi-k2.7", Name: "Kimi K2.7", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "kimi-k2.6", Name: "Kimi K2.6", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "minimax-m3", Name: "MiniMax M3", ContextLength: 204800, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "hy4-preview", Name: "Hy4 Preview", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "hy3", Name: "Hy3", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "hy3-x", Name: "Hy3-X", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "deepseek-v4-pro", Name: "DeepSeek V4 Pro", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "deepseek-v4-flash", Name: "DeepSeek V4 Flash", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+	}
+}
+
+func wbGlobalModels() []pluginapi.ModelInfo {
+	return []pluginapi.ModelInfo{
+		{ID: "kimi-k3", Name: "Kimi-K3", ContextLength: 262144, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "glm-5.3", Name: "GLM-5.3", ContextLength: 200000, MaxCompletionTokens: 32768, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
+		{ID: "deepseek-v4.1-flash", Name: "Deepseek-V4.1-Flash", ContextLength: 1000000, MaxCompletionTokens: 128000, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "glm-5.2", Name: "GLM-5.2", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "glm-5.1", Name: "GLM-5.1", ContextLength: 131072, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "glm-5v-turbo", Name: "GLM-5V Turbo", ContextLength: 131072, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "kimi-k2.7", Name: "Kimi K2.7", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "minimax-m3", Name: "MiniMax M3", ContextLength: 204800, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
-		{ID: "hy3", Name: "Hy3", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
-		{ID: "hy3-preview", Name: "Hy3 Preview", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
-		{ID: "hy3-preview-agent", Name: "Hy3 Preview Agent", ContextLength: 262144, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 		{ID: "deepseek-v4-pro", Name: "DeepSeek V4 Pro", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
-		{ID: "deepseek-v4-flash", Name: "DeepSeek V4 Flash", ContextLength: 1000000, MaxCompletionTokens: 8192, OwnedBy: providerName, SupportedGenerationMethods: []string{"chat"}},
 	}
+}
+
+func wbModels() []pluginapi.ModelInfo {
+	return wbCNModels()
 }
 
 // configuredModels holds the config_yaml `models:` override. Empty means
@@ -194,33 +218,78 @@ func nonEmptyModels(models []pluginapi.ModelInfo) []pluginapi.ModelInfo {
 	return out
 }
 
-func cachedDynamicModels() ([]pluginapi.ModelInfo, bool) {
-	dynamicModelsCache.RLock()
-	defer dynamicModelsCache.RUnlock()
-	if len(dynamicModelsCache.models) > 0 && time.Since(dynamicModelsCache.fetched) < dynamicModelsCacheTTL {
-		return dynamicModelsCache.models, true
+func cachedDynamicModelsForRealm(realm string) ([]pluginapi.ModelInfo, bool) {
+	if realm == "global" {
+		dynamicModelsCacheGlobal.RLock()
+		defer dynamicModelsCacheGlobal.RUnlock()
+		if len(dynamicModelsCacheGlobal.models) > 0 && time.Since(dynamicModelsCacheGlobal.fetched) < dynamicModelsCacheTTL {
+			return dynamicModelsCacheGlobal.models, true
+		}
+		return nil, false
+	}
+	dynamicModelsCacheCN.RLock()
+	defer dynamicModelsCacheCN.RUnlock()
+	if len(dynamicModelsCacheCN.models) > 0 && time.Since(dynamicModelsCacheCN.fetched) < dynamicModelsCacheTTL {
+		return dynamicModelsCacheCN.models, true
 	}
 	return nil, false
 }
 
-func storeDynamicModels(models []pluginapi.ModelInfo) {
-	dynamicModelsCache.Lock()
-	dynamicModelsCache.models = models
-	dynamicModelsCache.fetched = time.Now()
-	dynamicModelsCache.Unlock()
+func storeDynamicModelsForRealm(realm string, models []pluginapi.ModelInfo) {
+	if realm == "global" {
+		dynamicModelsCacheGlobal.Lock()
+		dynamicModelsCacheGlobal.models = models
+		dynamicModelsCacheGlobal.fetched = time.Now()
+		dynamicModelsCacheGlobal.Unlock()
+		return
+	}
+	dynamicModelsCacheCN.Lock()
+	dynamicModelsCacheCN.models = models
+	dynamicModelsCacheCN.fetched = time.Now()
+	dynamicModelsCacheCN.Unlock()
 }
 
-// fetchDynamicModelsFromStorage 拉取动态模型列表，**不**在此处兜底静态列表。
-//
-// 返回空切片语义为"动态发现不可用"（无凭据 / 上游失败 / 空结果），由调用方
-// 按 resolveModels 的优先级链回退到配置或静态默认。若这里直接返回
-// wbModels()，调用方将无法区分"上游真的只有这些模型"与"上游调用失败"，
-// 导致新增模型被静默遮蔽且无任何可观测信号。
-// [参数] storageJSON：宿主传入的账号凭据 JSON
-// [返回] 动态模型列表；动态不可用时返回 nil
-// 最近修改时间 2026-09-12（取消静默回退 wbModels，改由 resolveModels 统一兜底）
+func cachedDynamicModels() ([]pluginapi.ModelInfo, bool) {
+	return cachedDynamicModelsForRealm("cn")
+}
+
+func storeDynamicModels(models []pluginapi.ModelInfo) {
+	if models == nil {
+		storeDynamicModelsForRealm("cn", nil)
+		storeDynamicModelsForRealm("global", nil)
+		return
+	}
+	storeDynamicModelsForRealm("cn", models)
+}
+
+// mergeModelLists merges multiple model lists, deduplicating by model ID (case-insensitive)
+// while preserving the order of first appearance. Empty IDs are ignored.
+func mergeModelLists(lists ...[]pluginapi.ModelInfo) []pluginapi.ModelInfo {
+	seen := make(map[string]struct{})
+	var out []pluginapi.ModelInfo
+	for _, list := range lists {
+		for _, m := range list {
+			if m.ID == "" {
+				continue
+			}
+			key := strings.ToLower(m.ID)
+			if _, exists := seen[key]; exists {
+				continue
+			}
+			seen[key] = struct{}{}
+			out = append(out, m)
+		}
+	}
+	return out
+}
+
 func fetchDynamicModelsFromStorage(storageJSON []byte) []pluginapi.ModelInfo {
-	if models, ok := cachedDynamicModels(); ok {
+	realm := detectRealm(storageJSON, "")
+	return fetchDynamicModelsFromStorageWithRealm(storageJSON, realm)
+}
+
+func fetchDynamicModelsFromStorageWithRealm(storageJSON []byte, realm string) []pluginapi.ModelInfo {
+	if models, ok := cachedDynamicModelsForRealm(realm); ok {
 		return models
 	}
 	accessToken := ""
@@ -230,23 +299,86 @@ func fetchDynamicModelsFromStorage(storageJSON []byte) []pluginapi.ModelInfo {
 		}
 	}
 	if accessToken == "" {
-		// 可观测性（2026-09-12）：StorageJSON 提取不到 token 是动态发现静默
-		// 失效的候选根因之一，必须留痕——否则生产只能看到兜底列表而无线索。
-		log.Printf("[workbuddy] models: dynamic discovery skipped, no access token in StorageJSON (len=%d)", len(storageJSON))
+		log.Printf("[workbuddy] models: dynamic discovery skipped (%s), no access token in StorageJSON (len=%d)", realm, len(storageJSON))
+		if realm == "global" {
+			return wbGlobalModels()
+		}
 		return nil
 	}
 	dyn, err := callModelsAPI(accessToken)
 	if err != nil {
-		log.Printf("[workbuddy] models: dynamic discovery failed: %v", err)
+		log.Printf("[workbuddy] models: dynamic discovery failed (%s): %v", realm, err)
+		if realm == "global" {
+			fallback := wbGlobalModels()
+			storeDynamicModelsForRealm(realm, fallback)
+			return fallback
+		}
 		return nil
 	}
 	if len(dyn) == 0 {
-		log.Printf("[workbuddy] models: dynamic discovery returned 0 models")
+		log.Printf("[workbuddy] models: dynamic discovery returned 0 models (%s)", realm)
+		if realm == "global" {
+			fallback := wbGlobalModels()
+			storeDynamicModelsForRealm(realm, fallback)
+			return fallback
+		}
 		return nil
 	}
-	log.Printf("[workbuddy] models: dynamic discovery ok: %d models", len(dyn))
-	storeDynamicModels(dyn)
+	log.Printf("[workbuddy] models: dynamic discovery ok (%s): %d models", realm, len(dyn))
+	storeDynamicModelsForRealm(realm, dyn)
 	return dyn
+}
+
+// fetchDynamicModels discovers dynamic models across both CN and Global accounts.
+// On startup or static listing, it scans host auth files to pull upstream lists for each realm.
+// If an upstream endpoint is unreachable, it falls back to the realm's static list.
+func fetchDynamicModels() []pluginapi.ModelInfo {
+	cnModels, cnCached := cachedDynamicModelsForRealm("cn")
+	globalModels, globalCached := cachedDynamicModelsForRealm("global")
+
+	if !cnCached || !globalCached {
+		files, err := hostAuthList()
+		if err == nil {
+			var cnStorage, globalStorage []byte
+			for _, f := range files {
+				if f.Disabled {
+					continue
+				}
+				phys, err := hostAuthGetPhysical(f.AuthIndex)
+				if err != nil || len(phys.JSON) == 0 {
+					continue
+				}
+				tok, ok := extractAccessToken(phys.JSON)
+				if !ok || tok == "" {
+					continue
+				}
+				realm := detectRealm(phys.JSON, tok)
+				if realm == "global" {
+					if len(globalStorage) == 0 {
+						globalStorage = phys.JSON
+					}
+				} else {
+					if len(cnStorage) == 0 {
+						cnStorage = phys.JSON
+					}
+				}
+				if len(cnStorage) > 0 && len(globalStorage) > 0 {
+					break
+				}
+			}
+			if !cnCached && len(cnStorage) > 0 {
+				cnModels = fetchDynamicModelsFromStorageWithRealm(cnStorage, "cn")
+			}
+			if !globalCached && len(globalStorage) > 0 {
+				globalModels = fetchDynamicModelsFromStorageWithRealm(globalStorage, "global")
+			}
+		}
+	}
+
+	if len(cnModels) == 0 && len(globalModels) == 0 {
+		return nil
+	}
+	return mergeModelLists(cnModels, globalModels)
 }
 
 // fetchDynamicModels calls the WorkBuddy API to get the latest model list.
@@ -291,7 +423,8 @@ func isGlobalToken(accessToken string) bool {
 	if json.Unmarshal(raw, &claims) != nil {
 		return false
 	}
-	return strings.Contains(strings.ToLower(claims.ISS), "workbuddy.ai")
+	iss := strings.ToLower(claims.ISS)
+	return strings.Contains(iss, "workbuddy.ai") || strings.Contains(iss, "codebuddy.ai")
 }
 
 // callModelsAPI GETs /console/enterprises/personal/models from the upstream.
@@ -391,6 +524,27 @@ func parseModelsAPIResponse(body []byte) ([]pluginapi.ModelInfo, error) {
 			SupportedGenerationMethods: []string{"chat"},
 		})
 	}
+
+	// Dynamic kimi-k3 injection: upstream CN returns "kimi-k3-1" (display "Kimi-K3"),
+	// but users and clients use "kimi-k3". If kimi-k3-1 exists and kimi-k3 is absent,
+	// synthesize a kimi-k3 entry with the same parameters.
+	hasK3 := false
+	var k31Model *pluginapi.ModelInfo
+	for i := range out {
+		if strings.EqualFold(out[i].ID, "kimi-k3") {
+			hasK3 = true
+		}
+		if strings.EqualFold(out[i].ID, "kimi-k3-1") {
+			k31Model = &out[i]
+		}
+	}
+	if !hasK3 && k31Model != nil {
+		k3 := *k31Model
+		k3.ID = "kimi-k3"
+		k3.Name = "Kimi-K3"
+		out = append(out, k3)
+	}
+
 	return out, nil
 }
 
@@ -592,44 +746,57 @@ func filterExcludedModels(models []pluginapi.ModelInfo, host pluginapi.HostConfi
 // [参数] raw：宿主传入的 StaticModelRequest
 // [返回] 成功 envelope；请求解析失败时返回错误
 // 最近修改时间 2026-09-12（接入动态发现缓存，与 for_auth 统一优先级链）
+// resolveUpstreamModelForAuth resolves model aliases and applies realm-specific model rewrites.
+// For Global (workbuddy.ai), "kimi-k3-1" must be mapped to "kimi-k3" because Global rejects
+// "kimi-k3-1" with code 11102 ("model [kimi-k3-1] service info not found").
+// For CN (copilot.tencent.com), both "kimi-k3" and "kimi-k3-1" are accepted.
+func resolveUpstreamModelForAuth(model string, attributes map[string]string, sa *storedAuth) string {
+	upstream := resolveUpstreamModel(model, attributes)
+	if sa != nil && accountRegion(sa) == "global" {
+		if strings.EqualFold(strings.TrimSpace(upstream), "kimi-k3-1") {
+			return "kimi-k3"
+		}
+	}
+	return upstream
+}
+
 func handleModelStatic(raw []byte) ([]byte, error) {
 	var req pluginapi.StaticModelRequest
 	if err := json.Unmarshal(raw, &req); err != nil {
 		return nil, err
 	}
 	cacheModelAliases(req.Host)
-	models := resolveModels(dynamicModelsFromCache(), getConfiguredModels(), wbModels())
+	models := resolveModels(fetchDynamicModels(), getConfiguredModels(), wbModels())
 	models = filterExcludedModels(models, req.Host)
 	return okEnvelope(pluginapi.ModelResponse{Provider: providerName, Models: models})
 }
 
 // dynamicModelsFromCache 只读返回未过期的动态模型缓存，不触发上游请求。
-// 供 model.static 这类没有账号凭据的路径使用。
-// [参数] 无
-// [返回] 缓存中的模型列表；无有效缓存时返回 nil
-// 最近修改时间 2026-09-12（随 handleModelStatic 接入动态发现新增）
+// 供没有账号凭据的路径使用。
 func dynamicModelsFromCache() []pluginapi.ModelInfo {
-	if models, ok := cachedDynamicModels(); ok {
-		return models
+	cnModels, _ := cachedDynamicModelsForRealm("cn")
+	globalModels, _ := cachedDynamicModelsForRealm("global")
+	if len(cnModels) > 0 || len(globalModels) > 0 {
+		return mergeModelLists(cnModels, globalModels)
 	}
 	return nil
 }
 
-// handleModelForAuth 返回指定账号的模型列表，优先级为动态 > 配置 > 静态默认。
-// [参数] raw：宿主传入的 AuthModelRequest（含 StorageJSON 凭据）
-// [返回] 成功 envelope；请求解析失败时返回错误
-// 最近修改时间 2026-09-12（优先级由"配置优先合并"反转为"动态优先、配置保底"）
+// handleModelForAuth 返回指定账号的模型列表，根据账号 realm 选取对应的动态与静态保底模型。
 func handleModelForAuth(raw []byte) ([]byte, error) {
 	var req pluginapi.AuthModelRequest
 	if err := json.Unmarshal(raw, &req); err != nil {
 		return nil, err
 	}
-	// Always return the plugin's canonical provider key. The host skips any
-	// response whose Provider doesn't match the auth's provider, so echoing
-	// req.AuthProvider back would silently drop the model list whenever the
-	// auth file carries a non-canonical provider string.
+	// Always return the plugin's canonical provider key.
 	cacheModelAliases(req.Host)
-	models := resolveModels(fetchDynamicModelsFromStorage(req.StorageJSON), getConfiguredModels(), wbModels())
+	realm := detectRealm(req.StorageJSON, "")
+	fallback := wbCNModels()
+	if realm == "global" {
+		fallback = wbGlobalModels()
+	}
+	dyn := fetchDynamicModelsFromStorageWithRealm(req.StorageJSON, realm)
+	models := resolveModels(dyn, getConfiguredModels(), fallback)
 	models = filterExcludedModels(models, req.Host)
 	return okEnvelope(pluginapi.ModelResponse{Provider: providerName, Models: models})
 }

@@ -134,19 +134,15 @@ func rewriteSystemInPlace(obj map[string]any) bool {
 // ensureSystemMessageInPlace is the in-place form of ensureSystemMessage.
 // Returns true when obj was modified.
 func ensureSystemMessageInPlace(obj map[string]any, sa *storedAuth) bool {
-	if sa == nil || !isGlobalDomain(sa.Auth.Domain) {
+	if sa == nil || accountRegion(sa) != "global" {
 		return false
 	}
 	messages, ok := obj["messages"].([]any)
 	if !ok || len(messages) == 0 {
 		return false
 	}
-	for _, m := range messages {
-		msg, ok := m.(map[string]any)
-		if !ok {
-			continue
-		}
-		if role, _ := msg["role"].(string); strings.EqualFold(role, "system") {
+	if firstMsg, ok := messages[0].(map[string]any); ok {
+		if role, _ := firstMsg["role"].(string); strings.EqualFold(role, "system") {
 			return false
 		}
 	}
@@ -320,46 +316,29 @@ func rewriteSystemForUpstream(payload []byte) []byte {
 	return out
 }
 
-// ensureSystemMessage injects a minimal system message if none is present.
-// Global (www.workbuddy.ai) rejects user-only requests with code 11101
-// "Parse message failed: 11101:invalid request". CN (copilot.tencent.com)
-// does not require a system message but tolerates one. Inserting a
-// harmless system message unifies both paths.
+// ensureSystemMessage injects a minimal system message if the first message is not system.
+// Global (www.workbuddy.ai) rejects requests with code 11128 "first message is not system prompt"
+// if messages[0] is not a system prompt. CN (copilot.tencent.com) does not require a system
+// message but tolerates one.
 func ensureSystemMessage(payload []byte, sa *storedAuth) []byte {
 	if len(payload) == 0 {
 		return payload
 	}
 	// Only inject for Global; CN doesn't need it and we minimize diff.
-	if sa == nil || !isGlobalDomain(sa.Auth.Domain) {
+	if sa == nil || accountRegion(sa) != "global" {
 		return payload
 	}
 	var obj map[string]any
 	if json.Unmarshal(payload, &obj) != nil {
 		return payload
 	}
-	messages, ok := obj["messages"].([]any)
-	if !ok || len(messages) == 0 {
-		return payload
-	}
-	for _, m := range messages {
-		msg, ok := m.(map[string]any)
-		if !ok {
-			continue
-		}
-		if role, _ := msg["role"].(string); strings.EqualFold(role, "system") {
-			return payload // already has system message
+	if ensureSystemMessageInPlace(obj, sa) {
+		out, err := json.Marshal(obj)
+		if err == nil {
+			return out
 		}
 	}
-	systemMsg := map[string]any{
-		"role":    "system",
-		"content": "You are a helpful assistant.",
-	}
-	obj["messages"] = append([]any{systemMsg}, messages...)
-	out, err := json.Marshal(obj)
-	if err != nil {
-		return payload
-	}
-	return out
+	return payload
 }
 
 // rewriteContentField sanitizes blocked templates in one message's content,

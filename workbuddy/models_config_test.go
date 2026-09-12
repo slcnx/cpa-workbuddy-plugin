@@ -490,8 +490,8 @@ func TestParseModelsAPIResponse_RealUpstreamPayload(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parseModelsAPIResponse: %v", err)
 	}
-	if len(got) != 15 {
-		t.Fatalf("model count = %d, want 15: %+v", len(got), got)
+	if len(got) != 16 {
+		t.Fatalf("model count = %d, want 16: %+v", len(got), got)
 	}
 	byID := make(map[string]pluginapi.ModelInfo, len(got))
 	for _, m := range got {

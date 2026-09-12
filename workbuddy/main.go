@@ -336,7 +336,7 @@ type registrationCapability struct {
 }
 
 // version is injected at build time via -ldflags "-X main.version=...".
-var version = "0.14.30"
+var version = "0.14.31"
 
 func wbRegistration() registration {
 	return registration{
@@ -380,11 +380,18 @@ func wbRegistration() registration {
 // upstream call per account.
 const dynamicModelsCacheTTL = 5 * time.Minute
 
-var dynamicModelsCache struct {
-	sync.RWMutex
-	models  []pluginapi.ModelInfo
-	fetched time.Time
-}
+var (
+	dynamicModelsCacheCN struct {
+		sync.RWMutex
+		models  []pluginapi.ModelInfo
+		fetched time.Time
+	}
+	dynamicModelsCacheGlobal struct {
+		sync.RWMutex
+		models  []pluginapi.ModelInfo
+		fetched time.Time
+	}
+)
 
 //
 // CPA applies oauth-model-alias to the models this plugin registers, so the
@@ -681,7 +688,8 @@ func handleExecExecute(raw []byte) ([]byte, error) {
 	}
 	// Resolve oauth-model-alias (e.g. "point/deepseek-v4-flash") back to the
 	// real upstream model ID; the upstream rejects unknown alias IDs.
-	upstreamModel := resolveUpstreamModel(req.Model, req.AuthAttributes)
+	// For Global, kimi-k3-1 is rewritten to kimi-k3.
+	upstreamModel := resolveUpstreamModelForAuth(req.Model, req.AuthAttributes, sa)
 	started := time.Now()
 	authUID := ""
 	if sa.Account.UID != "" {
@@ -764,7 +772,8 @@ func handleExecExecute(raw []byte) ([]byte, error) {
 		// Re-prepare against the new account's stored identity so any
 		// per-account tool/schema/system rules apply. body itself
 		// stays byte-identical w.r.t. the user's intent.
-		curBody = prepareUpstreamBody(req.Payload, req.OriginalRequest, curSA, upstreamModel)
+		curUpstreamModel := resolveUpstreamModelForAuth(req.Model, req.AuthAttributes, curSA)
+		curBody = prepareUpstreamBody(req.Payload, req.OriginalRequest, curSA, curUpstreamModel)
 		reasoningEffort = reasoningEffortFromBody(curBody)
 	}
 	if completionErr != nil {
@@ -803,7 +812,7 @@ func handleExecStream(raw []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	upstreamModel := resolveUpstreamModel(req.Model, req.AuthAttributes)
+	upstreamModel := resolveUpstreamModelForAuth(req.Model, req.AuthAttributes, sa)
 	started := time.Now()
 	authUID := ""
 	if sa.Account.UID != "" {
